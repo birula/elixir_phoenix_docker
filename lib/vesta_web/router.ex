@@ -82,4 +82,19 @@ defmodule VestaWeb.Router do
       live "/users/confirm", UserConfirmationInstructionsLive, :new
     end
   end
+
+  ## Exams routes
+
+  scope "/", VestaWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live_session :exams,
+      on_mount: [{VestaWeb.UserAuth, :ensure_authenticated}] do
+      live "/exams/", ExamLive.Index, :index
+      live "/exams/new", ExamLive.Index, :new
+      live "/exams/:id/edit", ExamLive.Index, :edit
+      live "/exams/:id", ExamLive.Show, :show
+      live "/exams/:id/show/edit", ExamLive.Show, :edit
+    end
+  end
 end

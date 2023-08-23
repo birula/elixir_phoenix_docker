@@ -1,0 +1,41 @@
+<.header>
+  Listing Exams
+  <:actions>
+    <.link patch={~p"/exams/new"}>
+      <.button>New Exam</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="exams"
+  rows={@streams.exams}
+  row_click={fn {_id, exam} -> JS.navigate(~p"/exams/#{exam}") end}
+>
+  <:col :let={{_id, exam}} label="Name"><%= exam.name %></:col>
+  <:action :let={{_id, exam}}>
+    <div class="sr-only">
+      <.link navigate={~p"/exams/#{exam}"}>Show</.link>
+    </div>
+    <.link patch={~p"/exams/#{exam}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, exam}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: exam.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="exam-modal" show on_cancel={JS.patch(~p"/exams")}>
+  <.live_component
+    module={VestaWeb.ExamLive.FormComponent}
+    id={@exam.id || :new}
+    title={@page_title}
+    action={@live_action}
+    exam={@exam}
+    patch={~p"/exams"}
+  />
+</.modal>
